@@ -4,60 +4,50 @@ Spyder Editor
 
 This is a temporary script file.
 """
-#import numpy as np
-#import numpy as np
 import cv2
 import time
 import datetime
 
 cap = cv2.VideoCapture(0)
-#time.sleep(0.25)
-#firstframe = None
-#ret2, firstframe = cap.read()
-#firstframe = cv2.cvtColor(firstframe, cv2.COLOR_BGR2GRAY)
-#firstframe = cv2.GaussianBlur(firstframe,(21,21),0)
+
 avg = None
 lastUploaded = datetime.datetime.now()
 motionCounter = 0
 time.sleep(10)
 while(True):
-    # Capture frame-by-frame
+    # 逐帧获取图像
     tiestamp = datetime.datetime.now()
     ret, frame = cap.read()
     text = "unoccupied"
     if not ret:
         break
-    
 
-    # Our operations on the frame come here
-   # gray = cv2.resize(frame,width=500)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray,(21,21),0)
+
+    # 对每帧图像进行操作
+    gray = cv2.resize(frame,width=500)#调整大小
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)#变成灰色图像
+    gray = cv2.GaussianBlur(gray,(21,21),0)#高斯滤波
     if avg is None:
         avg = gray.copy().astype("float")
         continue
     cv2.accumulateWeighted(gray,avg,0.5)
-    # Display the resulting frame
+    # 显示处理后的图像
     cv2.imshow('frame',gray)
-    #if firstframe is None:
-       # firstframe = gray
-       # continue
-  #  cv2.imshow('first',firstframe)
-    #frameDelta = cv2.absdiff(firstframe,gray)
+    #计算当前帧与第一帧的区别
     frameDelta = cv2.absdiff(gray,cv2.convertScaleAbs(avg))
    # cv2.imshow('first2',frameDelta)
+   #填充孔洞
     thresh = cv2.threshold(frameDelta, 45, 255, cv2.THRESH_BINARY)[1]
     thresh = cv2.dilate(thresh, None, iterations=2)
     cv2.imshow('thresh',thresh)
+    #查找轮廓
     contours, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)[-2:] 
   #  cv2.imshow('thresh2',thresh.copy())
     for c in contours:
         # if the contour is too small, ignore it
         if cv2.contourArea(c) < 500:
            continue
- 
-        # compute the bounding box for the contour, draw it on the frame,
-        # and update the text
+
         # 计算轮廓的边界框，在当前帧中画出该框
         (x, y, w, h) = cv2.boundingRect(c)
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -71,11 +61,11 @@ while(True):
       #  if (timestamp-lastUploaded).second>=2:
            # motionCounter+=1
             #if motionCounter>=23:
-                
-    
+
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-   
+
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
