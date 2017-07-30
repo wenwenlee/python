@@ -95,28 +95,10 @@ def gestureDection(crop_img,cnt,thresh):
     return count_defects       
  
 def action(cnt):
-    if count_defects == 1 :
-        cv2.putText(img,"This is one", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-     
     
-    elif count_defects == 2 :
-        str = "This is two"
-        cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-     
-    elif count_defects == 3  :
-        cv2.putText(img,"This is tree", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-        
-    
-    elif count_defects == 4 :
-#        os.startfile("E:/program/5.jpg")
-#        time.sleep(10)
-        cv2.putText(img,"his is four", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-       
-    else:
-        cv2.putText(img,"Hello World!!!", (5, 50),\
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-
+    cv2.putText(img,"This is "+str(count_defects),(5,100),cv2.FONT_HERSHEY_SIMPLEX,2,(255,255,255),2)
     return img
+
 cap = cv2.VideoCapture(0)
 while(1):
     # read image
@@ -149,14 +131,6 @@ while(1):
     cv2.imshow('img', img)
     all_img = np.hstack((drawing, crop_img))
     cv2.imshow('Contours', all_img)
-#    titles = ['GaussianBlur Image', 'THRESH_OTSU Thresholding (v = 127)','img']
-#    images = [blurred, thresh,img]
-#    for i in xrange(3):
-#        
-#        plt.subplot(1,3,i+1),plt.imshow(images[i],'gray')
-#        plt.title(titles[i])
-#        plt.xticks([]),plt.yticks([])
-#    plt.show()
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
